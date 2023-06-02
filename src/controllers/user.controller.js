@@ -16,20 +16,23 @@ const create = catchError(async (req, res) => {
 
 const remove = catchError(async (req, res) => {
     const {id} = req.params
-    await User.destroy({where: {id} })
+    const removeUser = await User.destroy({where: {id} })
+    if(!removeUser) return res.status(404).json({ message: "User not found for delete"})
     return res.sendStatus(204)
 })
 
 const getOne = catchError(async (req, res) => {
     const {id} = req.params
-    const user = await User.findByPk(id)
-    return res.json(user)
+    const oneUser = await User.findByPk(id)
+    if(!oneUser) return res.status(404).json({ message: "User not found"})
+    return res.json(oneUser)
 })
 
 const update = catchError(async (req, res) => {
     const user = req.body
     const { id } = req.params
     const userUpdate = await User.update(user, { where: { id }, returning: true })
+    if(!userUpdate) return res.status(404).json({ message: "User not found for update"})
     return res.json(userUpdate[1][0])
   })
 
